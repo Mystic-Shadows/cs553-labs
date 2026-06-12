@@ -1,4 +1,59 @@
 # Lab 2 - Hello HTTP + JSON
+## Graduate Addition
+* Added modulo operation
+* Added unit tests for modulo
+
+## How to Run
+1. Open a terminal and run ```npm install``` if needed
+2. Run ```npm run server``` in the same terminal
+3. Use a browser or curl commands to interact with the server
+4. Close the server by switching to its terminal and using ```ctrl-c```
+
+## Commands
+### health
+Returns a JSON response showing that the server is running.
+### echo
+Accepts a JSON request body and returns the same data back to the client.
+### requests
+Returns information about how many requests the server has handled since it started.
+### calculate
+Input json object that includes:
+* operation (string)
+* a (number)
+* b (number)
+
+| Operation  | Meaning               |
+| ---------- | --------------------- |
+| `add`      | Add `a` and `b`       |
+| `subtract` | Subtract `b` from `a` |
+| `multiply` | Multiply `a` and `b`  |
+| `divide`   | Divide `a` by `b`     |
+| `modulo`   | Modulo `b` of `a`     |
+
+Returns a result if the input object has no issues (divide by zero, bad operation, etc.)
+
+## Reflection Questions
+### What is the difference between a TCP message and an HTTP request?
+TCP defines what happens to send a message and what defines what can be expected from its use. HTTP sits ontop of TCP as format that simplifies how the data is formatted. It also defines several basic operations and error codes, making it universal and easily portable between machines.
+
+Specifically, the format between a message and a request differs. TCP can be just about anything whereas HTTP is expected to use one of a few commands, contain information about send/receive dataypes, and contain specific data.
+
+### What does the `Content-Type: application/json` header tell the server?
+`Content-Type: application/json` tells the server what format the inbound data is in. This allows the server to determine how to read the data.
+
+### Why should a server return different HTTP status codes for different situations?
+A server behaving correctly vs off-nominally should be made aware to the client. Furthermore, if there is off-nominal behavior, then knowing what sort and on whose end will speed up the debugging/repair process. Some status codes also imply the existence of data within the message.
+
+### What happens if the client sends invalid JSON?
+This is may be handled by the API or - especially if doesn't have the expected data - the server will need to validate the data before using it. Javascript is very forgiving so where other languages might throw an exception Javascript will produce _something_ and move on.
+
+### How is this lab different from Lab 1?
+The main difference is the level that we are working at. We trade some of the tedium of working with TCP sockets for HTTP which is easier but binds the developer to its contract (restrictions and expectations). Instead of viewing communication as streams of information, we now see them as json objects. These json objects allow us to pass information about the value, such as its type and how its grouped with the other data sent alongside it.
+
+---
+---
+---
+# ANNOTATED Lab 2 - Hello HTTP + JSON
 
 In Lab 1, you worked directly with a TCP socket and created a small command-based server.
 
@@ -48,7 +103,7 @@ starter/
 
 Your HTTP server must support the following routes.
 
-### `GET /health`
+### `GET /health` [X]
 
 Returns a JSON response showing that the server is running.
 
@@ -60,7 +115,7 @@ Example response:
 }
 ```
 
-### `POST /echo`
+### `POST /echo` [X]
 
 Accepts a JSON request body and returns the same data back to the client.
 
@@ -80,7 +135,7 @@ Example response:
 }
 ```
 
-### `POST /calculate`
+### `POST /calculate` [X]
 
 Accepts a JSON request body with an operation and two numbers.
 
@@ -113,7 +168,7 @@ Your server must support at least the following operations:
 
 The server should return an error response for unsupported operations.
 
-### `GET /requests`
+### `GET /requests` [X]
 
 Returns information about how many requests the server has handled since it started.
 
@@ -281,9 +336,9 @@ Graduate students should complete one additional feature.
 Choose one of the following:
 
 1. Add a new route, such as `GET /time` or `POST /uppercase`.
-2. Add one additional calculation operation and document it.
+2. Add one additional calculation operation and document it. [X]
 3. Improve the request counter so it tracks counts by route.
-4. Add additional automated tests for error handling.
+4. Add additional automated tests for error handling. [~~]
 
 Document your graduate extension in your submission.
 
@@ -293,11 +348,11 @@ Submit your completed lab according to the course submission instructions.
 
 Your submission should include:
 
-* Your updated source code.
-* Your completed HTTP JSON server.
-* Your updated README if you changed or extended the API.
-* Your answers to the reflection questions.
-* Any graduate extension work, if applicable.
+* [X] Your updated source code.
+* [X] Your completed HTTP JSON server.
+* [X] Your updated README if you changed or extended the API.
+* [X] Your answers to the reflection questions.
+* [X] Any graduate extension work, if applicable.
 
 Before submitting, verify that:
 

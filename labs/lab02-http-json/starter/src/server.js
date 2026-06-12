@@ -38,16 +38,86 @@ export function readJsonBody(req) {
 }
 
 export function handleCalculate(body) {
-    // TODO: Validate that operation, a, and b are present.
-    // TODO: Validate that a and b are numbers.
-    // TODO: Support add, subtract, multiply, and divide.
-    // TODO: Return an error for unsupported operations.
-    // TODO: Return an error for division by zero.
+    let output = 0;
+
+    if (!(Object.hasOwn(body, "operation") &&
+        Object.hasOwn(body, "a") &&
+        Object.hasOwn(body, "b"))) {
+        return {
+            statusCode: 400,
+            response: {
+                error: "Missing fields in request. Needs 'operation', 'a', 'b'"
+            }
+        };
+    }
+
+    if (!((typeof body.operation) == 'string' &&
+          (typeof body.a) == 'number' &&
+          (typeof body.b) == 'number')) {
+        return {
+            statusCode: 400,
+            response: {
+                error: "Bad type. 'operation' is a string. 'a' is a number. 'b' is a number."
+            }
+        };
+    }
+
+    switch (body.operation) {
+        case "add":
+            output = body.a + body.b;
+            break;
+        case "subtract":
+            output = body.a - body.b;
+            break;
+        case "multiply":
+            output = body.a * body.b;
+            break;
+        case "divide":
+            if (body.b == 0) {
+                return {
+                    statusCode: 400,
+                    response: {
+                        error: "attempt to divide by 0"
+                    }
+                };
+            }
+            else {
+                output = body.a / body.b;
+            }
+            break;
+        case "modulo":
+            if (body.b == 0) {
+                return {
+                    statusCode: 400,
+                    response: {
+                        error: "attempt to divide by 0"
+                    }
+                };
+            }
+            else {
+                output = ((body.a % body.b) + body.b) % body.b; // True modulo operation since % is remainder in Javascript.
+                // if the remainder is negative, then the addition of the modulo value will push it into the positive
+                //   (since the value from a % b must be less than b)
+                //   the following remainder operation will do nothing
+                // if remainder is positive, then we are 'done'
+                //   to put everything on one line, the addition need for the other case has the remainder taken again to
+                //   force the positive back to the right value
+            }
+            break;
+        default:
+            return {
+                statusCode: 400,
+                response: {
+                    error: "operation not recognized"
+                }
+            };
+
+    }
 
     return {
-        statusCode: 501,
+        statusCode: 200,
         response: {
-            error: "Calculation not implemented yet"
+            result: output
         }
     };
 }
@@ -64,8 +134,7 @@ export async function requestHandler(req, res) {
     }
 
     if (method === "GET" && url === "/requests") {
-        // TODO: Return the current request count as JSON.
-        sendJson(res, 501, { error: "Request counter not implemented yet" });
+        sendJson(res, 200, { count: requestCount });
         return;
     }
 
@@ -73,8 +142,11 @@ export async function requestHandler(req, res) {
         try {
             const body = await readJsonBody(req);
 
-            // TODO: Return the parsed JSON body back to the client.
-            sendJson(res, 501, { error: "Echo not implemented yet" });
+            if (Object.hasOwn(body, "message")) {
+                sendJson(res, 200, { message: body.message });
+            } else {
+                sendJson(res, 400, { error: "Missing 'message' field" });
+            }
         } catch {
             sendJson(res, 400, { error: "Invalid JSON" });
         }
@@ -106,7 +178,7 @@ export function resetState() {
     requestCount = 0;
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (import.meta.url === `file:///${process.argv[1].replaceAll("\\", "/")}`) {
     const port = process.env.PORT || DEFAULT_PORT;
     const server = createServer();
 
